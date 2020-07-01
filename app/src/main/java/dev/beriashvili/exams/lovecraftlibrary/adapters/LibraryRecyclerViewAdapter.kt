@@ -25,21 +25,23 @@ class LibraryRecyclerViewAdapter(
     override fun getItemCount(): Int = entries.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.onBind()
+        holder.onBind(position)
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private lateinit var entry: Entry
 
-        fun onBind() {
-            entry = entries[adapterPosition]
+        fun onBind(position: Int) {
+            entry = entries[position]
 
-            itemView.titleTextView.text = entry.title
-            itemView.descriptionTextView.text = entry.description
+            itemView.apply {
+                titleTextView.text = entry.title
+                descriptionTextView.text = entry.description
 
-            itemView.setOnClickListener {
-                if (origin is LibraryActivity) {
-                    Toast.makeText(origin, "Unimplemented function.", Toast.LENGTH_SHORT).show()
+                setOnClickListener {
+                    if (origin is LibraryActivity) {
+                        Toast.makeText(origin, "Unimplemented function.", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

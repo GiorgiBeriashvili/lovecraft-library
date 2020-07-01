@@ -13,4 +13,10 @@
         android:icon="@drawable/ic_baseline_filter_list_24"
         android:title="Filter"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/sortItem"
+        android:icon="@drawable/ic_baseline_sort_24"
+        android:title="Sort"
+        app:showAsAction="ifRoom" />
 </menu>

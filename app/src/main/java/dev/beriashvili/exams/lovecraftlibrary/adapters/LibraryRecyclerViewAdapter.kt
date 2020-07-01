@@ -1,6 +1,7 @@
 package dev.beriashvili.exams.lovecraftlibrary.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +9,7 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import dev.beriashvili.exams.lovecraftlibrary.R
-import dev.beriashvili.exams.lovecraftlibrary.activities.LibraryActivity
+import dev.beriashvili.exams.lovecraftlibrary.activities.ManuscriptActivity
 import dev.beriashvili.exams.lovecraftlibrary.models.Entry
 import kotlinx.android.synthetic.main.library_recyclerview_layout.view.*
 import java.util.*
@@ -81,9 +82,11 @@ class LibraryRecyclerViewAdapter(
                 entryDescriptionTextView.text = entry.description
 
                 setOnClickListener {
-                    if (origin is LibraryActivity) {
-                        origin.inspectManuscript(entry.id)
-                    }
+                    val intent = Intent(origin, ManuscriptActivity::class.java)
+
+                    intent.putExtra("id", entry.id)
+
+                    origin.startActivity(intent)
                 }
             }
         }

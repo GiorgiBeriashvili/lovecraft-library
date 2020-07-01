@@ -2,7 +2,6 @@ package dev.beriashvili.exams.lovecraftlibrary.activities
 
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -10,15 +9,16 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import com.google.gson.Gson
 import dev.beriashvili.exams.lovecraftlibrary.R
 import dev.beriashvili.exams.lovecraftlibrary.adapters.LibraryRecyclerViewAdapter
 import dev.beriashvili.exams.lovecraftlibrary.models.Entry
-import dev.beriashvili.exams.lovecraftlibrary.models.Manuscript
 import dev.beriashvili.exams.lovecraftlibrary.models.Url
 import dev.beriashvili.exams.lovecraftlibrary.networking.HttpClient
 import dev.beriashvili.exams.lovecraftlibrary.networking.RequestCallback
+import dev.beriashvili.exams.lovecraftlibrary.ui.UI
 import dev.beriashvili.exams.lovecraftlibrary.utils.Constants
 import kotlinx.android.synthetic.main.activity_library.*
 
@@ -27,12 +27,16 @@ class LibraryActivity : AppCompatActivity() {
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     private lateinit var libraryRecyclerViewAdapter: LibraryRecyclerViewAdapter
 
-    private val sharedPreferences by lazy {
+    private val librarySharedPreferences by lazy {
         getSharedPreferences("library", Context.MODE_PRIVATE)
     }
 
-    private val editor by lazy {
-        sharedPreferences.edit()
+    private val settingsSharedPreferences by lazy {
+        getSharedPreferences("settings", Context.MODE_PRIVATE)
+    }
+
+    private val librarySharedPreferencesEditor by lazy {
+        librarySharedPreferences.edit()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,51 +80,61 @@ class LibraryActivity : AppCompatActivity() {
     private fun init() {
         supportActionBar?.title = "Library"
 
-        initializeDrawer()
-
         loadPreferences()
 
-        swipeRefreshLayout.isRefreshing = true
+        initializeDrawer()
+
+        librarySwipeRefreshLayout.isRefreshing = true
 
         fetchEntries()
 
-        swipeRefreshLayout.setOnRefreshListener {
-            swipeRefreshLayout.isRefreshing = true
+        librarySwipeRefreshLayout.setOnRefreshListener {
+            librarySwipeRefreshLayout.isRefreshing = true
 
             fetchEntries()
         }
     }
 
     private fun loadPreferences() {
+        when (settingsSharedPreferences.getString("theme_mode", "Day")) {
+            "Day" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            "Night" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
+
         Url.apply {
-            category = sharedPreferences.getString("category", "All")!!
-            sort = sharedPreferences.getString("sort", "Ascending")!!
+            category = librarySharedPreferences.getString("category", "All")!!
+            sort = librarySharedPreferences.getString("sort", "Ascending")!!
         }
     }
 
     private fun initializeDrawer() {
         actionBarDrawerToggle =
-            ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer)
+            ActionBarDrawerToggle(
+                this,
+                libraryDrawerLayout,
+                R.string.open_drawer,
+                R.string.close_drawer
+            )
 
-        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        libraryDrawerLayout.addDrawerListener(actionBarDrawerToggle)
 
         actionBarDrawerToggle.syncState()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        navigationView.setNavigationItemSelectedListener { item: MenuItem ->
+        libraryNavigationView.setNavigationItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
                 R.id.libraryItem -> {
-                    drawerLayout.closeDrawers()
+                    libraryDrawerLayout.closeDrawers()
 
-                    swipeRefreshLayout.isRefreshing = true
+                    librarySwipeRefreshLayout.isRefreshing = true
 
                     fetchEntries()
                 }
                 R.id.archiveItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
                 R.id.aboutItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
                 R.id.lovecraftItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
-                R.id.settingsItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
+                R.id.settingsItem -> UI.switchThemeMode(this)
             }
 
             true
@@ -133,7 +147,7 @@ class LibraryActivity : AppCompatActivity() {
                 Toast.makeText(this@LibraryActivity, throwable.message, Toast.LENGTH_SHORT)
                     .show()
 
-                swipeRefreshLayout.isRefreshing = false
+                librarySwipeRefreshLayout.isRefreshing = false
             }
 
             override fun onSuccess(response: String) {
@@ -144,32 +158,7 @@ class LibraryActivity : AppCompatActivity() {
                     LibraryRecyclerViewAdapter(entries, this@LibraryActivity)
                 libraryRecyclerView.adapter = libraryRecyclerViewAdapter
 
-                swipeRefreshLayout.isRefreshing = false
-            }
-        })
-    }
-
-    fun inspectManuscript(id: String) {
-        swipeRefreshLayout.isRefreshing = true
-
-        HttpClient.get("${Url.basePath}/$id", object : RequestCallback {
-            override fun onError(throwable: Throwable) {
-                Toast.makeText(this@LibraryActivity, throwable.message, Toast.LENGTH_SHORT)
-                    .show()
-
-                swipeRefreshLayout.isRefreshing = false
-            }
-
-            override fun onSuccess(response: String) {
-                val manuscript = Gson().fromJson(response, Manuscript::class.java)
-
-                val intent = Intent(this@LibraryActivity, ManuscriptActivity::class.java)
-
-                intent.putExtra("manuscript", manuscript)
-
-                swipeRefreshLayout.isRefreshing = false
-
-                startActivity(intent)
+                librarySwipeRefreshLayout.isRefreshing = false
             }
         })
     }
@@ -186,7 +175,7 @@ class LibraryActivity : AppCompatActivity() {
                     Url.category = Constants.CATEGORIES[index]
                 }
                 .setPositiveButton("Confirm") { _, _ ->
-                    editor.apply {
+                    librarySharedPreferencesEditor.apply {
                         putString("category", Url.category)
 
                         apply()
@@ -195,7 +184,7 @@ class LibraryActivity : AppCompatActivity() {
                     fetchEntries()
                 }
                 .setNegativeButton("Dismiss") { _, _ ->
-                    Url.category = sharedPreferences.getString("category", "All")!!
+                    Url.category = librarySharedPreferences.getString("category", "All")!!
                 }
                 .create()
                 .show()
@@ -209,7 +198,7 @@ class LibraryActivity : AppCompatActivity() {
                     Url.sort = Constants.SORT[index]
                 }
                 .setPositiveButton("Confirm") { _, _ ->
-                    editor.apply {
+                    librarySharedPreferencesEditor.apply {
                         putString("sort", Url.sort)
 
                         apply()
@@ -218,7 +207,7 @@ class LibraryActivity : AppCompatActivity() {
                     fetchEntries()
                 }
                 .setNegativeButton("Dismiss") { _, _ ->
-                    Url.sort = sharedPreferences.getString("sort", "Ascending")!!
+                    Url.sort = librarySharedPreferences.getString("sort", "Ascending")!!
                 }
                 .create()
                 .show()

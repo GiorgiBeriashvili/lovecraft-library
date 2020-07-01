@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Lovecraft Library</string>
+    <string name="open_drawer">Opened Drawer</string>
+    <string name="close_drawer">Closed Drawer</string>
+</resources>

@@ -1,18 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/aboutItem"
-        android:icon="@drawable/ic_baseline_info_24"
-        android:title="About" />
+    <group android:id="@+id/navigationGroup">
+        <item
+            android:id="@+id/navigationItem"
+            android:title="Navigation">
+            <menu>
+                <item
+                    android:id="@+id/libraryItem"
+                    android:icon="@drawable/ic_baseline_library_books_24"
+                    android:title="Library" />
 
-    <item
-        android:id="@+id/lovecraftItem"
-        android:icon="@drawable/ic_baseline_person_24"
-        android:title="H. P. Lovecraft" />
+                <item
+                    android:id="@+id/archiveItem"
+                    android:icon="@drawable/ic_baseline_archive_24"
+                    android:title="Archive" />
+            </menu>
+        </item>
+    </group>
 
-    <item
-        android:id="@+id/settingsItem"
-        android:icon="@drawable/ic_baseline_settings_24"
-        android:title="Settings" />
+    <group android:id="@+id/informationGroup">
+        <item
+            android:id="@+id/informationItem"
+            android:title="Information">
+            <menu>
+                <item
+                    android:id="@+id/aboutItem"
+                    android:icon="@drawable/ic_baseline_info_24"
+                    android:title="About" />
+
+                <item
+                    android:id="@+id/lovecraftItem"
+                    android:icon="@drawable/ic_baseline_person_24"
+                    android:title="H. P. Lovecraft" />
+            </menu>
+        </item>
+    </group>
+
+    <group android:id="@+id/systemGroup">
+        <item
+            android:id="@+id/systemItem"
+            android:title="System">
+            <menu>
+                <item
+                    android:id="@+id/settingsItem"
+                    android:icon="@drawable/ic_baseline_settings_24"
+                    android:title="Settings" />
+            </menu>
+        </item>
+    </group>
 </menu>

@@ -4,17 +4,60 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import dev.beriashvili.exams.lovecraftlibrary.R
 import dev.beriashvili.exams.lovecraftlibrary.activities.LibraryActivity
 import dev.beriashvili.exams.lovecraftlibrary.models.Entry
 import kotlinx.android.synthetic.main.library_recyclerview_layout.view.*
+import java.util.*
 
 class LibraryRecyclerViewAdapter(
-    private val entries: List<Entry>,
+    private var entries: List<Entry>,
     private val origin: Context
-) : RecyclerView.Adapter<LibraryRecyclerViewAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<LibraryRecyclerViewAdapter.ViewHolder>(), Filterable {
+    private val filterableEntries = entries.toMutableList()
+
+    private val filter = object : Filter() {
+        override fun performFiltering(charSequence: CharSequence?): FilterResults {
+            val filteredList = mutableListOf<Entry>()
+
+            if (charSequence.toString().isBlank()) {
+                filteredList.addAll(entries)
+            } else {
+                entries.forEach { entry: Entry ->
+                    entry.apply {
+                        if (title.toLowerCase(Locale.ROOT).contains(
+                                charSequence.toString().toLowerCase(Locale.ROOT)
+                            ) || description.toLowerCase(Locale.ROOT)
+                                .contains(charSequence.toString().toLowerCase(Locale.ROOT))
+                        ) {
+                            filteredList.add(entry)
+                        }
+                    }
+                }
+            }
+
+            return FilterResults().apply {
+                values = filteredList
+            }
+        }
+
+        override fun publishResults(
+            charSequence: CharSequence?,
+            filterResults: FilterResults?
+        ) {
+            filterableEntries.clear()
+
+            @Suppress("UNCHECKED_CAST")
+            filterableEntries.addAll(filterResults?.values as Collection<Entry>)
+
+            notifyDataSetChanged()
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
             LayoutInflater.from(parent.context)
@@ -22,7 +65,7 @@ class LibraryRecyclerViewAdapter(
         )
     }
 
-    override fun getItemCount(): Int = entries.size
+    override fun getItemCount(): Int = filterableEntries.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.onBind(position)
@@ -32,7 +75,7 @@ class LibraryRecyclerViewAdapter(
         private lateinit var entry: Entry
 
         fun onBind(position: Int) {
-            entry = entries[position]
+            entry = filterableEntries[position]
 
             itemView.apply {
                 titleTextView.text = entry.title
@@ -40,10 +83,15 @@ class LibraryRecyclerViewAdapter(
 
                 setOnClickListener {
                     if (origin is LibraryActivity) {
-                        Toast.makeText(origin, "Unimplemented function.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(origin, "Unimplemented function.", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
             }
         }
+    }
+
+    override fun getFilter(): Filter {
+        return filter
     }
 }

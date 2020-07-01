@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import com.google.gson.Gson
 import dev.beriashvili.exams.lovecraftlibrary.R
 import dev.beriashvili.exams.lovecraftlibrary.adapters.LibraryRecyclerViewAdapter
@@ -22,6 +23,7 @@ import kotlinx.android.synthetic.main.activity_library.*
 class LibraryActivity : AppCompatActivity() {
     private var entries = listOf<Entry>()
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
+    private lateinit var libraryRecyclerViewAdapter: LibraryRecyclerViewAdapter
 
     private val sharedPreferences by lazy {
         getSharedPreferences("library", Context.MODE_PRIVATE)
@@ -39,7 +41,22 @@ class LibraryActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.app_bar_menu, menu)
+        menuInflater.inflate(R.menu.library_menu, menu)
+
+        val searchItem = menu?.findItem(R.id.searchItem)
+        val searchView = searchItem?.actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                libraryRecyclerViewAdapter.filter.filter(newText)
+
+                return true
+            }
+        })
 
         return true
     }
@@ -73,8 +90,10 @@ class LibraryActivity : AppCompatActivity() {
     }
 
     private fun loadPreferences() {
-        Url.category = sharedPreferences.getString("category", "All")!!
-        Url.sort = sharedPreferences.getString("sort", "Ascending")!!
+        Url.apply {
+            category = sharedPreferences.getString("category", "All")!!
+            sort = sharedPreferences.getString("sort", "Ascending")!!
+        }
     }
 
     private fun initializeDrawer() {
@@ -89,6 +108,14 @@ class LibraryActivity : AppCompatActivity() {
 
         navigationView.setNavigationItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
+                R.id.libraryItem -> {
+                    drawerLayout.closeDrawers()
+
+                    swipeRefreshLayout.isRefreshing = true
+
+                    fetchEntries()
+                }
+                R.id.archiveItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
                 R.id.aboutItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
                 R.id.lovecraftItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
                 R.id.settingsItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
@@ -111,8 +138,9 @@ class LibraryActivity : AppCompatActivity() {
                 entries =
                     Gson().fromJson(response, arrayOf<Entry>()::class.java).toList()
 
-                apartmentRecyclerView.adapter =
+                libraryRecyclerViewAdapter =
                     LibraryRecyclerViewAdapter(entries, this@LibraryActivity)
+                libraryRecyclerView.adapter = libraryRecyclerViewAdapter
 
                 swipeRefreshLayout.isRefreshing = false
             }
@@ -121,9 +149,8 @@ class LibraryActivity : AppCompatActivity() {
 
     private fun handleAppBarItem(item: MenuItem) {
         when (item.itemId) {
-            R.id.searchItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
             R.id.filterItem -> AlertDialog.Builder(this)
-                .setTitle("Filter by Category")
+                .setTitle("Categorize")
                 .setIcon(R.drawable.ic_baseline_filter_list_24)
                 .setSingleChoiceItems(
                     Constants.CATEGORIES,

@@ -13,7 +13,7 @@
         android:layout_margin="8dp">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/entryImageView"
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:layout_weight="4"
@@ -31,7 +31,7 @@
             android:paddingHorizontal="8dp">
 
             <TextView
-                android:id="@+id/titleTextView"
+                android:id="@+id/entryTitleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:ellipsize="end"
@@ -44,7 +44,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/descriptionTextView"
+                android:id="@+id/entryDescriptionTextView"
                 android:layout_width="match_parent"
                 android:layout_height="110dp"
                 android:gravity="center"

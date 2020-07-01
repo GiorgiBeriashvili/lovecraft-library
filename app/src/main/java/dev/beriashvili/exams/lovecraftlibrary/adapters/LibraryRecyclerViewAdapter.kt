@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import dev.beriashvili.exams.lovecraftlibrary.R
 import dev.beriashvili.exams.lovecraftlibrary.activities.LibraryActivity
@@ -78,13 +77,12 @@ class LibraryRecyclerViewAdapter(
             entry = filterableEntries[position]
 
             itemView.apply {
-                titleTextView.text = entry.title
-                descriptionTextView.text = entry.description
+                entryTitleTextView.text = entry.title
+                entryDescriptionTextView.text = entry.description
 
                 setOnClickListener {
                     if (origin is LibraryActivity) {
-                        Toast.makeText(origin, "Unimplemented function.", Toast.LENGTH_SHORT)
-                            .show()
+                        origin.inspectManuscript(entry.id)
                     }
                 }
             }

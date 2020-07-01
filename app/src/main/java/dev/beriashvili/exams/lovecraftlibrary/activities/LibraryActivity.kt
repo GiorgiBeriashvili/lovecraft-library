@@ -2,6 +2,7 @@ package dev.beriashvili.exams.lovecraftlibrary.activities
 
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -14,6 +15,7 @@ import com.google.gson.Gson
 import dev.beriashvili.exams.lovecraftlibrary.R
 import dev.beriashvili.exams.lovecraftlibrary.adapters.LibraryRecyclerViewAdapter
 import dev.beriashvili.exams.lovecraftlibrary.models.Entry
+import dev.beriashvili.exams.lovecraftlibrary.models.Manuscript
 import dev.beriashvili.exams.lovecraftlibrary.models.Url
 import dev.beriashvili.exams.lovecraftlibrary.networking.HttpClient
 import dev.beriashvili.exams.lovecraftlibrary.networking.RequestCallback
@@ -143,6 +145,31 @@ class LibraryActivity : AppCompatActivity() {
                 libraryRecyclerView.adapter = libraryRecyclerViewAdapter
 
                 swipeRefreshLayout.isRefreshing = false
+            }
+        })
+    }
+
+    fun inspectManuscript(id: String) {
+        swipeRefreshLayout.isRefreshing = true
+
+        HttpClient.get("${Url.basePath}/$id", object : RequestCallback {
+            override fun onError(throwable: Throwable) {
+                Toast.makeText(this@LibraryActivity, throwable.message, Toast.LENGTH_SHORT)
+                    .show()
+
+                swipeRefreshLayout.isRefreshing = false
+            }
+
+            override fun onSuccess(response: String) {
+                val manuscript = Gson().fromJson(response, Manuscript::class.java)
+
+                val intent = Intent(this@LibraryActivity, ManuscriptActivity::class.java)
+
+                intent.putExtra("manuscript", manuscript)
+
+                swipeRefreshLayout.isRefreshing = false
+
+                startActivity(intent)
             }
         })
     }

@@ -75,7 +75,7 @@ class ManuscriptActivity : AppCompatActivity() {
                 }
                 R.id.archiveItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
                 R.id.aboutItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
-                R.id.lovecraftItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
+                R.id.lovecraftItem -> startActivity(Intent(this, LovecraftActivity::class.java))
                 R.id.settingsItem -> UI.switchThemeMode(this)
             }
 
@@ -87,8 +87,6 @@ class ManuscriptActivity : AppCompatActivity() {
         manuscriptSwipeRefreshLayout.isRefreshing = true
 
         val id = intent.getStringExtra("id")
-
-        intent.removeExtra("id")
 
         HttpClient.get("${Url.basePath}/$id", object : RequestCallback {
             override fun onError(throwable: Throwable) {

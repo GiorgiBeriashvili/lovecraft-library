@@ -17,9 +17,9 @@ object UI {
             settingsSharedPreferences.edit()
         }
 
-        var themeMode = settingsSharedPreferences.getString("theme_mode", "Day")
+        var themeMode = settingsSharedPreferences.getString("theme_mode", "Light")
 
-        AlertDialog.Builder(context)
+        AlertDialog.Builder(context, R.style.AlertDialog)
             .setTitle("Theme Mode")
             .setIcon(R.drawable.ic_baseline_settings_24)
             .setSingleChoiceItems(
@@ -30,20 +30,38 @@ object UI {
             }
             .setPositiveButton("Confirm") { _, _ ->
                 when (themeMode) {
-                    "Day" -> {
+                    "Light" -> {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
                         settingsSharedPreferencesEditor.apply {
-                            putString("theme_mode", "Day")
+                            putString("theme_mode", "Light")
 
                             apply()
                         }
                     }
-                    "Night" -> {
+                    "Dark" -> {
                         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
                         settingsSharedPreferencesEditor.apply {
-                            putString("theme_mode", "Night")
+                            putString("theme_mode", "Dark")
+
+                            apply()
+                        }
+                    }
+                    "Battery Saver" -> {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+
+                        settingsSharedPreferencesEditor.apply {
+                            putString("theme_mode", "Battery Saver")
+
+                            apply()
+                        }
+                    }
+                    "System Default" -> {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+
+                        settingsSharedPreferencesEditor.apply {
+                            putString("theme_mode", "System Default")
 
                             apply()
                         }
@@ -51,7 +69,7 @@ object UI {
                 }
             }
             .setNegativeButton("Dismiss") { _, _ ->
-                themeMode = settingsSharedPreferences.getString("theme_mode", "Day")
+                themeMode = settingsSharedPreferences.getString("theme_mode", "Light")
             }
             .create()
             .show()

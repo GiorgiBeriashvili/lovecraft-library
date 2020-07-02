@@ -2,6 +2,7 @@ package dev.beriashvili.exams.lovecraftlibrary.activities
 
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -9,7 +10,6 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SearchView
 import com.google.gson.Gson
 import dev.beriashvili.exams.lovecraftlibrary.R
@@ -29,10 +29,6 @@ class LibraryActivity : AppCompatActivity() {
 
     private val librarySharedPreferences by lazy {
         getSharedPreferences("library", Context.MODE_PRIVATE)
-    }
-
-    private val settingsSharedPreferences by lazy {
-        getSharedPreferences("settings", Context.MODE_PRIVATE)
     }
 
     private val librarySharedPreferencesEditor by lazy {
@@ -96,11 +92,6 @@ class LibraryActivity : AppCompatActivity() {
     }
 
     private fun loadPreferences() {
-        when (settingsSharedPreferences.getString("theme_mode", "Day")) {
-            "Day" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            "Night" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        }
-
         Url.apply {
             category = librarySharedPreferences.getString("category", "All")!!
             sort = librarySharedPreferences.getString("sort", "Ascending")!!
@@ -133,7 +124,7 @@ class LibraryActivity : AppCompatActivity() {
                 }
                 R.id.archiveItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
                 R.id.aboutItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
-                R.id.lovecraftItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
+                R.id.lovecraftItem -> startActivity(Intent(this, LovecraftActivity::class.java))
                 R.id.settingsItem -> UI.switchThemeMode(this)
             }
 
@@ -165,7 +156,7 @@ class LibraryActivity : AppCompatActivity() {
 
     private fun handleAppBarItem(item: MenuItem) {
         when (item.itemId) {
-            R.id.filterItem -> AlertDialog.Builder(this)
+            R.id.filterItem -> AlertDialog.Builder(this, R.style.AlertDialog)
                 .setTitle("Categorize")
                 .setIcon(R.drawable.ic_baseline_filter_list_24)
                 .setSingleChoiceItems(
@@ -188,7 +179,7 @@ class LibraryActivity : AppCompatActivity() {
                 }
                 .create()
                 .show()
-            R.id.sortItem -> AlertDialog.Builder(this)
+            R.id.sortItem -> AlertDialog.Builder(this, R.style.AlertDialog)
                 .setTitle("Sort")
                 .setIcon(R.drawable.ic_baseline_sort_24)
                 .setSingleChoiceItems(

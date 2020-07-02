@@ -80,6 +80,7 @@ class LibraryRecyclerViewAdapter(
             itemView.apply {
                 entryTitleTextView.text = entry.title
                 entryDescriptionTextView.text = entry.description
+                entryCategoryTextView.text = entry.category
 
                 setOnClickListener {
                     val intent = Intent(origin, ManuscriptActivity::class.java)

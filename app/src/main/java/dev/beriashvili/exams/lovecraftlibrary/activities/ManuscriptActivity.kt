@@ -19,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_manuscript.*
 class ManuscriptActivity : AppCompatActivity() {
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     private lateinit var manuscript: Manuscript
+    private var textSize = 14f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,7 +75,7 @@ class ManuscriptActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.archiveItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
-                R.id.aboutItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
+                R.id.aboutItem -> UI.displayAboutInformation(this)
                 R.id.lovecraftItem -> startActivity(Intent(this, LovecraftActivity::class.java))
                 R.id.settingsItem -> UI.switchThemeMode(this)
             }
@@ -109,7 +110,16 @@ class ManuscriptActivity : AppCompatActivity() {
 
     private fun handleAppBarItem(item: MenuItem) {
         when (item.itemId) {
-            R.id.textSizeItem -> Toast.makeText(this, item.title, Toast.LENGTH_SHORT).show()
+            R.id.zoomInItem -> if (textSize <= 20f) {
+                textSize += 1f
+
+                manuscriptContentTextView.textSize = textSize
+            }
+            R.id.zoomOutItem -> if (textSize >= 12f) {
+                textSize -= 1f
+
+                manuscriptContentTextView.textSize = textSize
+            }
             R.id.saveItem -> Toast.makeText(this, item.title, Toast.LENGTH_SHORT).show()
         }
     }

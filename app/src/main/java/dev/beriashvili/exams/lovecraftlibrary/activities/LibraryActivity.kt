@@ -123,7 +123,7 @@ class LibraryActivity : AppCompatActivity() {
                     fetchEntries()
                 }
                 R.id.archiveItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
-                R.id.aboutItem -> Toast.makeText(this, item.title, Toast.LENGTH_LONG).show()
+                R.id.aboutItem -> UI.displayAboutInformation(this)
                 R.id.lovecraftItem -> startActivity(Intent(this, LovecraftActivity::class.java))
                 R.id.settingsItem -> UI.switchThemeMode(this)
             }

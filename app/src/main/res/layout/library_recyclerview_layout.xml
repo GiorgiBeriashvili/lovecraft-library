@@ -4,56 +4,56 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="@color/mainBackground"
+    android:layout_margin="4dp"
     app:cardElevation="4dp"
     app:cardUseCompatPadding="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_margin="4dp"
+        android:layout_weight="6"
+        android:background="@color/mainBackground"
+        android:orientation="vertical"
+        android:padding="8dp"
+        android:paddingHorizontal="8dp">
 
-        <ImageView
-            android:id="@+id/entryImageView"
-            android:layout_width="0dp"
-            android:layout_height="150dp"
-            android:layout_weight="4"
-            android:contentDescription="The entry's category's icon."
-            android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher" />
+        <TextView
+            android:id="@+id/entryTitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:hint="The Title"
+            android:maxLines="1"
+            android:textColor="@color/mainText"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:layout_weight="6"
-            android:background="@color/mainBackground"
-            android:orientation="vertical"
-            android:paddingHorizontal="8dp">
+        <TextView
+            android:id="@+id/entryDescriptionTextView"
+            android:layout_width="match_parent"
+            android:layout_height="110dp"
+            android:gravity="center"
+            android:hint="The Description"
+            android:paddingHorizontal="4dp"
+            android:textColor="@color/alternativeText"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="12sp"
+            android:textStyle="normal" />
 
-            <TextView
-                android:id="@+id/entryTitleTextView"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:ellipsize="end"
-                android:gravity="center"
-                android:hint="The Title"
-                android:maxLines="1"
-                android:textColor="@color/mainText"
-                android:textColorHint="@android:color/darker_gray"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/entryDescriptionTextView"
-                android:layout_width="match_parent"
-                android:layout_height="110dp"
-                android:gravity="center"
-                android:hint="The Description"
-                android:paddingHorizontal="4dp"
-                android:textColor="@color/alternativeText"
-                android:textColorHint="@android:color/darker_gray"
-                android:textSize="12sp"
-                android:textStyle="normal" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/entryCategoryTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:hint="The Category"
+            android:paddingHorizontal="4dp"
+            android:textColor="@color/alternativeText"
+            android:textColorHint="@android:color/darker_gray"
+            android:textSize="12sp"
+            android:textStyle="bold|italic" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -7,7 +7,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 const val SCHEMA = "http"
-const val HOST = "192.168.1.32"
+const val HOST = "3.85.1.67"
 const val PORT = "3000"
 const val BASE_PATH = "api"
 const val API_VERSION = "v1"

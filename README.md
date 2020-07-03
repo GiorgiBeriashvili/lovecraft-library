@@ -18,6 +18,15 @@ The application is pretty straightforward to use, however, it is made of numerou
 8. **The API and the fetched data** - It has to be noted that the application is built around the **custom** service implemented for this specific application. You can refer to the server and its documentation on another repository: https://github.com/GiorgiBeriashvili/lovecraft-api
 9. **Miscellaneous** - The application has much more specific functionalities to offer for the user, which are mostly technical in a sense. You can explore all of that through the usage of the application itself or by browsing the source code
 
+## Design 
+
+As mentioned above, the application has 4 theme mode: Light, Dark, Battery Saver, System Default (if user's system default theme is dark, then the application's theme is automatically id dark). You can take a look at these screenshots:
+
+*Light theme mode:*
+
+![screenshot](light_theme_splash_screen.png)
+
+
 ## Technical Details
 
 Some parts of the application, especially database functionalities, are made asynchronous by utilizing Kotlin's coroutines.

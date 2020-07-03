@@ -20,7 +20,7 @@ The application is pretty straightforward to use, however, it is made of numerou
 
 ## Design 
 
-As mentioned above, the application has 4 theme modes: Light, Dark, Battery Saver, System Default (if user's system default theme is dark, then the application's theme is automatically id dark). You can take a look at these [screenshots](https://github.com/GiorgiBeriashvili/lovecraft-library/tree/master/screenshots).
+As mentioned above, the application has 4 theme modes: Light, Dark, Battery Saver, System Default (if user's system default theme is dark, then the application's theme is automatically id dark). You can take a look at these [screenshots](https://github.com/GiorgiBeriashvili/lovecraft-library/tree/master/screenshots) to see more design features (dark/light splash screens, zoom in/zoom out/save/delete icons, navigation drawer from right side, etc.).
 
 ## Technical Details
 

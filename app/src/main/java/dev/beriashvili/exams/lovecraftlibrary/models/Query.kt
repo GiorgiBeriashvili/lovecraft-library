@@ -1,6 +1,6 @@
 package dev.beriashvili.exams.lovecraftlibrary.models
 
-object Url {
+object Query {
     const val basePath = "manuscripts"
     var category = "All"
     var sort = "Ascending"

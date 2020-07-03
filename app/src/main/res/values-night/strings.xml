@@ -3,4 +3,28 @@
     <string name="open_drawer">Opened Drawer</string>
     <string name="close_drawer">Closed Drawer</string>
     <string name="about_message"><a href="https://github.com/GiorgiBeriashvili/lovecraft-library">GitHub Repository</a></string>
+    <string name="the_title">The Title</string>
+    <string name="the_content">The Content</string>
+    <string name="application_logo">Application logo.</string>
+    <string name="lovecraft_library">Lovecraft Library</string>
+    <string name="the_description">The Description</string>
+    <string name="the_category">The Category</string>
+    <string name="search_library">Search Library</string>
+    <string name="filter_library">Filter Library</string>
+    <string name="sort_library">Sort Library</string>
+    <string name="search_archive">Search Archive</string>
+    <string name="filter_archive">Filter Archive</string>
+    <string name="sort_archive">Sort Archive</string>
+    <string name="zoom_in">Zoom In</string>
+    <string name="zoom_out">Zoom Out</string>
+    <string name="archive_manuscript">Archive Manuscript</string>
+    <string name="unarchive_manuscript">Unarchive Manuscript</string>
+    <string name="navigation">Navigation</string>
+    <string name="library">Library</string>
+    <string name="archive">Archive</string>
+    <string name="information">Information</string>
+    <string name="about">About</string>
+    <string name="h_p_lovecraft">H. P. Lovecraft</string>
+    <string name="system">System</string>
+    <string name="theme_mode">Theme Mode</string>
 </resources>

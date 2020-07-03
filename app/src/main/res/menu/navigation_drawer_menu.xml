@@ -4,17 +4,17 @@
     <group android:id="@+id/navigationGroup">
         <item
             android:id="@+id/navigationItem"
-            android:title="Navigation">
+            android:title="@string/navigation">
             <menu>
                 <item
                     android:id="@+id/libraryItem"
                     android:icon="@drawable/ic_baseline_library_books_24"
-                    android:title="Library" />
+                    android:title="@string/library" />
 
                 <item
                     android:id="@+id/archiveItem"
                     android:icon="@drawable/ic_baseline_archive_24"
-                    android:title="Archive" />
+                    android:title="@string/archive" />
             </menu>
         </item>
     </group>
@@ -22,17 +22,17 @@
     <group android:id="@+id/informationGroup">
         <item
             android:id="@+id/informationItem"
-            android:title="Information">
+            android:title="@string/information">
             <menu>
                 <item
                     android:id="@+id/aboutItem"
                     android:icon="@drawable/ic_baseline_info_24"
-                    android:title="About" />
+                    android:title="@string/about" />
 
                 <item
                     android:id="@+id/lovecraftItem"
                     android:icon="@drawable/ic_baseline_person_24"
-                    android:title="H. P. Lovecraft" />
+                    android:title="@string/h_p_lovecraft" />
             </menu>
         </item>
     </group>
@@ -40,12 +40,12 @@
     <group android:id="@+id/systemGroup">
         <item
             android:id="@+id/systemItem"
-            android:title="System">
+            android:title="@string/system">
             <menu>
                 <item
-                    android:id="@+id/settingsItem"
+                    android:id="@+id/themeModeItem"
                     android:icon="@drawable/ic_baseline_settings_24"
-                    android:title="Settings" />
+                    android:title="@string/theme_mode" />
             </menu>
         </item>
     </group>

@@ -5,18 +5,24 @@
     <item
         android:id="@+id/zoomInItem"
         android:icon="@drawable/ic_baseline_zoom_in_24"
-        android:title="Zoom In"
+        android:title="@string/zoom_in"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/zoomOutItem"
         android:icon="@drawable/ic_baseline_zoom_out_24"
-        android:title="Zoom Out"
+        android:title="@string/zoom_out"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/saveItem"
+        android:id="@+id/archiveItem"
         android:icon="@drawable/ic_baseline_save_24"
-        android:title="Save Manuscript"
+        android:title="@string/archive_manuscript"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/unarchiveItem"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="@string/unarchive_manuscript"
         app:showAsAction="ifRoom" />
 </menu>

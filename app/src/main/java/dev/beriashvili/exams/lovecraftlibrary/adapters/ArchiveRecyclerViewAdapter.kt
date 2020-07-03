@@ -14,10 +14,10 @@ import dev.beriashvili.exams.lovecraftlibrary.models.Entry
 import kotlinx.android.synthetic.main.manuscript_recyclerview_layout.view.*
 import java.util.*
 
-class LibraryRecyclerViewAdapter(
-    private var entries: List<Entry>,
+class ArchiveRecyclerViewAdapter(
+    private var entries: MutableList<Entry>,
     private val origin: Context
-) : RecyclerView.Adapter<LibraryRecyclerViewAdapter.ViewHolder>(), Filterable {
+) : RecyclerView.Adapter<ArchiveRecyclerViewAdapter.ViewHolder>(), Filterable {
     private val filterableEntries = entries.toMutableList()
 
     private val filter = object : Filter() {

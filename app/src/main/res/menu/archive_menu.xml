@@ -3,21 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/librarySearchItem"
+        android:id="@+id/archiveSearchItem"
         android:icon="@drawable/ic_baseline_search_24"
-        android:title="@string/search_library"
+        android:title="@string/search_archive"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="ifRoom|collapseActionView" />
 
     <item
-        android:id="@+id/libraryFilterItem"
+        android:id="@+id/archiveFilterItem"
         android:icon="@drawable/ic_baseline_filter_list_24"
-        android:title="@string/filter_library"
+        android:title="@string/filter_archive"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/librarySortItem"
+        android:id="@+id/archiveSortItem"
         android:icon="@drawable/ic_baseline_sort_24"
-        android:title="@string/sort_library"
+        android:title="@string/sort_archive"
         app:showAsAction="ifRoom" />
 </menu>

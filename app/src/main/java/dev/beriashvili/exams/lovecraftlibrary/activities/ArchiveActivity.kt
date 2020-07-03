@@ -6,46 +6,56 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import com.google.gson.Gson
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import dev.beriashvili.exams.lovecraftlibrary.R
-import dev.beriashvili.exams.lovecraftlibrary.adapters.LibraryRecyclerViewAdapter
+import dev.beriashvili.exams.lovecraftlibrary.adapters.ArchiveRecyclerViewAdapter
+import dev.beriashvili.exams.lovecraftlibrary.database.LovecraftDatabase
 import dev.beriashvili.exams.lovecraftlibrary.models.Entry
 import dev.beriashvili.exams.lovecraftlibrary.models.Query
-import dev.beriashvili.exams.lovecraftlibrary.networking.HttpClient
-import dev.beriashvili.exams.lovecraftlibrary.networking.RequestCallback
 import dev.beriashvili.exams.lovecraftlibrary.ui.UI
 import dev.beriashvili.exams.lovecraftlibrary.utils.Constants
-import kotlinx.android.synthetic.main.activity_library.*
+import kotlinx.android.synthetic.main.activity_archive.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class LibraryActivity : AppCompatActivity() {
-    private val librarySharedPreferences by lazy {
-        getSharedPreferences("library", Context.MODE_PRIVATE)
+class ArchiveActivity : AppCompatActivity() {
+    private val lovecraftDatabase: LovecraftDatabase by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            LovecraftDatabase::class.java, "lovecraft"
+        ).build()
     }
 
-    private val librarySharedPreferencesEditor by lazy {
-        librarySharedPreferences.edit()
+    private val archiveSharedPreferences by lazy {
+        getSharedPreferences("archive", Context.MODE_PRIVATE)
     }
 
-    private var entries = listOf<Entry>()
+    private val archiveSharedPreferencesEditor by lazy {
+        archiveSharedPreferences.edit()
+    }
+
+    private val entries = mutableListOf<Entry>()
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
-    private lateinit var libraryRecyclerViewAdapter: LibraryRecyclerViewAdapter
+    private lateinit var archiveRecyclerViewAdapter: ArchiveRecyclerViewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_library)
+        setContentView(R.layout.activity_archive)
 
         init()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.library_menu, menu)
+        menuInflater.inflate(R.menu.archive_menu, menu)
 
-        val searchItem = menu?.findItem(R.id.librarySearchItem)
+        val searchItem = menu?.findItem(R.id.archiveSearchItem)
         val searchView = searchItem?.actionView as SearchView
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -54,7 +64,7 @@ class LibraryActivity : AppCompatActivity() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                libraryRecyclerViewAdapter.filter.filter(newText)
+                archiveRecyclerViewAdapter.filter.filter(newText)
 
                 return true
             }
@@ -74,27 +84,27 @@ class LibraryActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        supportActionBar?.title = "Library"
+        supportActionBar?.title = "Archive"
 
         loadPreferences()
 
         initializeDrawer()
 
-        librarySwipeRefreshLayout.isRefreshing = true
+        archiveSwipeRefreshLayout.isRefreshing = true
 
-        fetchEntries()
+        loadEntries()
 
-        librarySwipeRefreshLayout.setOnRefreshListener {
-            librarySwipeRefreshLayout.isRefreshing = true
+        archiveSwipeRefreshLayout.setOnRefreshListener {
+            archiveSwipeRefreshLayout.isRefreshing = true
 
-            fetchEntries()
+            loadEntries()
         }
     }
 
     private fun loadPreferences() {
         Query.apply {
-            category = librarySharedPreferences.getString("category", "All")!!
-            sort = librarySharedPreferences.getString("sort", "Ascending")!!
+            category = archiveSharedPreferences.getString("category", "All")!!
+            sort = archiveSharedPreferences.getString("sort", "Ascending")!!
         }
     }
 
@@ -102,27 +112,27 @@ class LibraryActivity : AppCompatActivity() {
         actionBarDrawerToggle =
             ActionBarDrawerToggle(
                 this,
-                libraryDrawerLayout,
+                archiveDrawerLayout,
                 R.string.open_drawer,
                 R.string.close_drawer
             )
 
-        libraryDrawerLayout.addDrawerListener(actionBarDrawerToggle)
+        archiveDrawerLayout.addDrawerListener(actionBarDrawerToggle)
 
         actionBarDrawerToggle.syncState()
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        libraryNavigationView.setNavigationItemSelectedListener { item: MenuItem ->
+        archiveNavigationView.setNavigationItemSelectedListener { item: MenuItem ->
             when (item.itemId) {
-                R.id.libraryItem -> {
-                    libraryDrawerLayout.closeDrawers()
+                R.id.libraryItem -> startActivity(Intent(this, LibraryActivity::class.java))
+                R.id.archiveItem -> {
+                    archiveDrawerLayout.closeDrawers()
 
-                    librarySwipeRefreshLayout.isRefreshing = true
+                    archiveSwipeRefreshLayout.isRefreshing = true
 
-                    fetchEntries()
+                    loadEntries()
                 }
-                R.id.archiveItem -> startActivity(Intent(this, ArchiveActivity::class.java))
                 R.id.aboutItem -> UI.displayAboutInformation(this)
                 R.id.lovecraftItem -> startActivity(Intent(this, LovecraftActivity::class.java))
                 R.id.themeModeItem -> UI.switchThemeMode(this)
@@ -132,31 +142,35 @@ class LibraryActivity : AppCompatActivity() {
         }
     }
 
-    private fun fetchEntries() {
-        HttpClient.get(Query.get(), object : RequestCallback {
-            override fun onError(throwable: Throwable) {
-                Toast.makeText(this@LibraryActivity, throwable.message, Toast.LENGTH_SHORT)
-                    .show()
+    private fun loadEntries() {
+        entries.clear()
 
-                librarySwipeRefreshLayout.isRefreshing = false
+        CoroutineScope(Dispatchers.IO).launch {
+            when (Query.category) {
+                "All" -> entries.addAll(lovecraftDatabase.entryDao().getAll())
+                else -> entries.addAll(lovecraftDatabase.entryDao().getByCategory(Query.category))
             }
 
-            override fun onSuccess(response: String) {
-                entries =
-                    Gson().fromJson(response, arrayOf<Entry>()::class.java).toList()
-
-                libraryRecyclerViewAdapter =
-                    LibraryRecyclerViewAdapter(entries, this@LibraryActivity)
-                libraryRecyclerView.adapter = libraryRecyclerViewAdapter
-
-                librarySwipeRefreshLayout.isRefreshing = false
+            when (Query.sort) {
+                "Ascending" -> entries.sortBy { entry -> entry.id }
+                "Descending" -> entries.sortByDescending { entry -> entry.id }
             }
-        })
+        }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(100)
+
+            archiveRecyclerView.layoutManager = LinearLayoutManager(this@ArchiveActivity)
+            archiveRecyclerViewAdapter = ArchiveRecyclerViewAdapter(entries, this@ArchiveActivity)
+            archiveRecyclerView.adapter = archiveRecyclerViewAdapter
+
+            archiveSwipeRefreshLayout.isRefreshing = false
+        }
     }
 
     private fun handleAppBarItem(item: MenuItem) {
         when (item.itemId) {
-            R.id.libraryFilterItem -> AlertDialog.Builder(this, R.style.AlertDialog)
+            R.id.archiveFilterItem -> AlertDialog.Builder(this, R.style.AlertDialog)
                 .setTitle("Categorize")
                 .setIcon(R.drawable.ic_baseline_filter_list_24)
                 .setSingleChoiceItems(
@@ -166,20 +180,20 @@ class LibraryActivity : AppCompatActivity() {
                     Query.category = Constants.CATEGORIES[index]
                 }
                 .setPositiveButton("Confirm") { _, _ ->
-                    librarySharedPreferencesEditor.apply {
+                    archiveSharedPreferencesEditor.apply {
                         putString("category", Query.category)
 
                         apply()
                     }
 
-                    fetchEntries()
+                    loadEntries()
                 }
                 .setNegativeButton("Dismiss") { _, _ ->
-                    Query.category = librarySharedPreferences.getString("category", "All")!!
+                    Query.category = archiveSharedPreferences.getString("category", "All")!!
                 }
                 .create()
                 .show()
-            R.id.librarySortItem -> AlertDialog.Builder(this, R.style.AlertDialog)
+            R.id.archiveSortItem -> AlertDialog.Builder(this, R.style.AlertDialog)
                 .setTitle("Sort")
                 .setIcon(R.drawable.ic_baseline_sort_24)
                 .setSingleChoiceItems(
@@ -189,16 +203,16 @@ class LibraryActivity : AppCompatActivity() {
                     Query.sort = Constants.SORT[index]
                 }
                 .setPositiveButton("Confirm") { _, _ ->
-                    librarySharedPreferencesEditor.apply {
+                    archiveSharedPreferencesEditor.apply {
                         putString("sort", Query.sort)
 
                         apply()
                     }
 
-                    fetchEntries()
+                    loadEntries()
                 }
                 .setNegativeButton("Dismiss") { _, _ ->
-                    Query.sort = librarySharedPreferences.getString("sort", "Ascending")!!
+                    Query.sort = archiveSharedPreferences.getString("sort", "Ascending")!!
                 }
                 .create()
                 .show()
